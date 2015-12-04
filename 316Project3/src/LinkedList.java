@@ -42,19 +42,6 @@ public class LinkedList<T> {
 			cur.next = n;
 		}
 		size++;
-		
-//		if ( size() == 0) {
-//			top = new Node(data);
-//		} else {
-//			Node temp = new Node(data);
-//			Node current = top;
-//			
-//			while (current.getNext() != null) {
-//				current = current.getNext();
-//			}
-//			current.setNext(temp);
-//		}
-//		size++;
 	}
 	
 	/**
@@ -71,51 +58,68 @@ public class LinkedList<T> {
 	 * @param idx specific index to place node
 	 */
 	public void add(T data, int idx) {
-		if ( size() == 0) {
+		if (top == null){
+			//simply puts at top of list
 			top = new Node(data);
+			size++;
 		} else {
-			Node temp = new Node(data);
-			Node current = top;
-			int count = 0;
-			
-			while(current.getNext() != null && count < idx - 1) {
-				current = current.getNext();
-				count++;
+			Node n = new Node(data);
+			Node cur = top;
+			if (idx == 0 ) {
+				n.setNext(cur);
+				top = n;
+				size++;
+			} else {
+				boolean t = true;
+				int c = 0;
+				while ( cur.next != null && t) {
+					if ( c == idx-1) {
+						n.setNext(cur.next);
+						cur.setNext(n);
+						size++;
+						t = false;
+					} else {
+						cur = cur.next;
+						c++;
+					}
+					
+				}
 			}
-			
-			temp.setNext(current.getNext());
-			current.setNext(temp);
 		}
-		
-		size++;
 	}
+	
 	/**
 	 * replaces element at specified index
 	 * @param data value to replace in node
 	 * @param idx specific index to replace node
 	 */
 	public boolean replace(T data, int idx){
-		if (idx < 0) {
+		if (idx < 0 || idx > size() - 1) {
 			//error out of bounds
 			return false;
 		}
 		
 		
+		
 		//first node to replace
 		if (idx == 0) {
-			Node newNode = new Node(data, top.getNext());
-			top = newNode;
+			Node n = new Node(data);
+			n.setNext(top.next);
+			top = n;
 			return true;
 		}
 		
 		//every node after the first
-		Node current = top;
+		Node cur = top;
 		for(int i = 0; i < idx - 1; i++) {
-			current = current.getNext();
+			if (cur == null){
+				return false;
+			}
+			cur = cur.next;
 		}
-		Node newNode = new Node(data);
-		newNode.setNext(current.getNext().getNext());
-		current.setNext(newNode);
+		Node n = new Node(data);
+		n.setNext(cur.next.next);
+		cur.setNext(n);
 		return true;
 	}
 	
@@ -130,16 +134,20 @@ public class LinkedList<T> {
 			return null;
 		}
 		
-		
-		Node current = top;
-		for(int i = 0; i < idx; i++) {
-			if (current.getNext() == null){
-				//idx too high, no element at that index to return null
-				return null;
-			}
-			current = current.getNext();
+		if (idx == 0) {
+			return top.getVal();
 		}
-		return current.getVal();
+		Node cur = top;
+		int c = 0;
+		while (cur != null) {
+			if (c == idx) {
+				return cur.getVal();
+			} else {
+				cur = cur.next;
+				c++;
+			}
+		}
+		return null;
 	}
 	
 	/**
