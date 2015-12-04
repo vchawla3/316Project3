@@ -1,7 +1,10 @@
+//import java.util.*;
 
 public class TestList {
 	
 	public static void main(String[] args){
+		//java.util.LinkedList<Integer> hi = new java.util.LinkedList<Integer>();
+		
 		LinkedList<Integer> tests = new LinkedList<Integer>();
 		
 		System.out.println(tests.isEmpty());
