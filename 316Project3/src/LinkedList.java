@@ -151,6 +151,36 @@ public class LinkedList<T> {
 	}
 	
 	/**
+	 * checks if object T is in this list
+	 * @param x object T to look for
+	 * @return boolean whether object is in the list
+	 */
+	public boolean contains(T x){
+		Node cur = top;
+		while (cur != null) {
+			if (cur.getVal() == x) {
+				return true;
+			}
+			cur = cur.next;
+		}
+		return false;
+	}
+	
+	/**
+	 * removes and returns head, 
+	 * returns null if empty
+	 * @return head or null
+	 */
+	public T removeHead(){
+		if (top == null ){
+			return null;
+		}
+		Node cur = top;
+		top = top.next;
+		return cur.getVal();
+	}
+	
+	/**
 	 * removes the node at the specified index
 	 * @param idx index of node to remove
 	 * @return boolean whether node is removed or not

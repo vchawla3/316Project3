@@ -45,6 +45,10 @@ public class TestList {
 		
 		System.out.println(tests.toString());
 		
+		//true
+		System.out.println(tests.contains(7));
+		//false
+		System.out.println(tests.contains(0));
 	}
 		
 }
