@@ -19,20 +19,33 @@ public class SocialNetwork {
 			System.out.println("File not Found!");
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	public static void parseCommands(){
+		Scanner scan = new Scanner(System.in);
 		
 	}
 	
 	public static void createGraph(Scanner scan){
+		boolean t = true;
 		while(scan.hasNext()){
-			String name = scan.nextLine();
-			Person p = new Person(name);
-			total.put(name, p);
-			peopleCount++;
+			if (t){
+				String name = scan.nextLine();
+				if (name.equals("$")) {
+					t = false;
+				} else {
+					Person p = new Person(name);
+					total.put(name, p);
+					peopleCount++;
+				}
+			} else {
+				String n1 = scan.next();
+				String n2 = scan.next();
+				Person p1 = total.get(n1);
+				Person p2 = total.get(n2);
+				p1.addAdj(p2);
+				p2.addAdj(p1);
+			}
 		}
 	}
 }
