@@ -3,11 +3,11 @@ public class Person {
 
 	public String name;
 	public LinkedList<Person> adjList = new LinkedList<Person>();
-	//public boolean visited;
+	public boolean visited;
 	
 	public Person(String name) {
 		this.name = name;
-		//this.visited = false;
+		this.visited = false;
 	}
 	
 	public void addAdj(Person p) {
@@ -26,7 +26,11 @@ public class Person {
 		return this.name;
 	}
 	
-//	public void setVisited(){
-//		this.visited = true;
-//	}
+	public void setVisited(boolean s){
+		this.visited = s;
+	}
+	
+	public boolean isVisit(){
+		return this.visited;
+	}
 }

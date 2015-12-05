@@ -48,7 +48,7 @@ public class SocialNetwork {
 					relation(n1, n2);
 					System.out.println("$");
 					break;
-				case "nonconnected":
+				case "notconnected":
 					notconnected();
 					System.out.println("$");
 					break;
@@ -73,7 +73,7 @@ public class SocialNetwork {
 				} else {
 					Person p = new Person(name);
 					total.put(name, p);
-					//allPeople.add(p);
+					allPeople.add(p);
 					peopleCount++;
 				}
 			} else {
@@ -111,7 +111,13 @@ public class SocialNetwork {
 		}
 	}
 
-	public static void relation(String n1, String n2) {
+	/**
+	 * used code from http://www.careercup.com/question?id=20786668 but modified partially
+	 * @param n1 name of first person
+	 * @param n2 name of second person
+	 * @return string containing the path, empty string ("") if no path
+	 */
+	public static String relation(String n1, String n2) {
 		Person start = total.get(n1);
 		Person end = total.get(n2);
 		
@@ -142,7 +148,9 @@ public class SocialNetwork {
 				}
 				System.out.print(thepath);
 				t = false;
-			} else {
+			} else if(p == null) {
+				t = false;
+			}else {
 				//keep searching
 				LinkedList<Person> pList = p.getAdj();
 				for (int i = 0; i < pList.size(); i++) {
@@ -155,11 +163,52 @@ public class SocialNetwork {
 				}	
 			}
 		}
-		
+		return thepath;
 	}
-	
+	/**
+	 * prints number of pairs of people are not connected in the social network
+	 */
 	public static void notconnected() {
-		
+		//set all to not visited
+		for (int i = 0; i < allPeople.size(); i++){
+			allPeople.get(i).setVisited(false);
+		}
+		int numNot = 1;
+		for (int i = 0; i < allPeople.size(); i++){
+			Person pe = allPeople.get(i);
+			while(!pe.isVisit()){
+				pe.setVisited(true);
+				LinkedList<Person> tovisit = new LinkedList<Person>();
+				LinkedList<Person> alreadyvisit = new LinkedList<Person>();
+				
+				tovisit.add(pe);
+				alreadyvisit.add(pe);
+				//path.put(start.getName(), null);
+
+				//p1.setVisited();
+				boolean t = true;
+				while(!tovisit.isEmpty() && t){
+					Person p = tovisit.removeHead();
+					if (p == null){
+						t = false;
+					} else {
+						//keep searching
+						LinkedList<Person> pList = p.getAdj();
+						for (int k = 0; k < pList.size(); k++) {
+							Person a = pList.get(k);
+							
+							if (!alreadyvisit.contains(a)) {
+								alreadyvisit.add(a);
+								tovisit.add(a);
+								a.setVisited(true);
+							}
+						}
+					}	
+				}
+				numNot *= alreadyvisit.size();
+			}
+		}
+		System.out.println(numNot);
 	}
 	
 	public static void popular() {
