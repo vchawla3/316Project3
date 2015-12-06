@@ -15,7 +15,7 @@ public class LinkedList<T> {
 	 * private int to keep track of the size of the total list
 	 */
 	private int size;
-	
+
 	/**
 	 * the constructor for a linked list
 	 */

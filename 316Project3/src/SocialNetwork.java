@@ -4,7 +4,7 @@ import java.io.*;
 
 public class SocialNetwork {
 	
-	//public static LinkedList<Person> allPeople = new LinkedList<Person>();
+	public static LinkedList<Person> allPeople = new LinkedList<Person>();
 	public static HashMap<String, Person> total = new HashMap<String,Person>();
 	public static int peopleCount = 0;
 	
@@ -45,7 +45,7 @@ public class SocialNetwork {
 				case "relation":
 					n1 = scan.next();
 					n2 = scan.next();
-					System.out.println(relation(n1, n2));
+					System.out.print(relation(n1, n2));
 					System.out.println("$");
 					break;
 				case "notconnected":
@@ -73,7 +73,7 @@ public class SocialNetwork {
 				} else {
 					Person p = new Person(name);
 					total.put(name, p);
-					//allPeople.add(p);
+					allPeople.add(p);
 					peopleCount++;
 				}
 			} else {
@@ -88,8 +88,11 @@ public class SocialNetwork {
 	}
 	
 	public static void isFriend(String n1, String n2) {
+		//get Person objects - only place to use map
 		Person p1 = total.get(n1);
 		Person p2 = total.get(n2);
+		
+		//check if adjacent by traversing list using contains method
 		if (p1.isAdj(p2)){
 			System.out.println("yes");
 		} else {
@@ -98,13 +101,15 @@ public class SocialNetwork {
 	}
 	
 	public static void mutual(String n1, String n2) {
+		//get Person objects - only place to use map
 		Person p1 = total.get(n1);
 		Person p2 = total.get(n2);
+		//compute algorithm
+		
 		LinkedList<Person> l1 = p1.getAdj();
 		
 		for(int i = 0; i < l1.size(); i++) {
 			Person p3 = l1.get(i);
-			//System.out.println(p3.getName());
 			if (p2.isAdj(p3)){
 				System.out.println(p3.getName());
 			}
@@ -118,8 +123,11 @@ public class SocialNetwork {
 	 * @return string containing the path, empty string ("") if no path
 	 */
 	public static String relation(String n1, String n2) {
+		//get Person objects - only place to use map
 		Person start = total.get(n1);
 		Person end = total.get(n2);
+		
+		//compute relation
 		LinkedList<Person> tovisit = new LinkedList<Person>();
 		LinkedList<Person> alreadyvisit = new LinkedList<Person>();
 		String thepath = "";
@@ -159,48 +167,85 @@ public class SocialNetwork {
 	 * prints number of pairs of people are not connected in the social network
 	 */
 	public static void notconnected() {
-		//set all to not visited
-		for (HashMap.Entry<String, Person> entry : total.entrySet()){
-			entry.getValue().setVisited(false);
+		//set all to not visited before doing bfs
+		for (int i = 0; i < peopleCount; i++){
+			allPeople.get(i).setVisited(false);
 		}
+		int numComp = 0;
+		int numSingleComp = 0;
 		int numNot = 1;
-		for (HashMap.Entry<String, Person> entry : total.entrySet()){
-			Person pe = entry.getValue();
-			while(!pe.isVisit()){
-				pe.setVisited(true);
-				LinkedList<Person> tovisit = new LinkedList<Person>();
-				LinkedList<Person> alreadyvisit = new LinkedList<Person>();
-				
-				tovisit.add(pe);
-				alreadyvisit.add(pe);
-				boolean t = true;
-				while(!tovisit.isEmpty() && t){
-					Person p = tovisit.removeHead();
-					if (p == null){
-						//no more to search
-						t = false;
-					} else {
-						//keep searching
-						LinkedList<Person> pList = p.getAdj();
-						for (int k = 0; k < pList.size(); k++) {
-							Person a = pList.get(k);
-							if (!alreadyvisit.contains(a)) {
-								alreadyvisit.add(a);
-								tovisit.add(a);
-								a.setVisited(true);
+		for (int i = 0; i < peopleCount; i++) {
+			Person pe = allPeople.get(i);
+			if (pe.getAdj().size() == peopleCount - 1) {
+				numNot = 0;
+			} else {
+				while(!pe.isVisit()){
+					pe.setVisited(true);
+					LinkedList<Person> tovisit = new LinkedList<Person>();
+					LinkedList<Person> alreadyvisit = new LinkedList<Person>();
+					
+					tovisit.add(pe);
+					alreadyvisit.add(pe);
+					boolean t = true;
+					while(!tovisit.isEmpty() && t){
+						Person p = tovisit.removeHead();
+						if (p == null){
+							//no more to search
+							t = false;
+						} else {
+							//keep searching
+							LinkedList<Person> pList = p.getAdj();
+							for (int k = 0; k < pList.size(); k++) {
+								Person a = pList.get(k);
+								if (!alreadyvisit.contains(a)) {
+									alreadyvisit.add(a);
+									tovisit.add(a);
+									a.setVisited(true);
+								}
 							}
-						}
-					}	
+						}	
+					}
+					if (alreadyvisit.size() == 1){
+						numSingleComp++;
+					}
+					numNot *= alreadyvisit.size();
+					numComp++;
 				}
-				numNot *= alreadyvisit.size();
 			}
 		}
+		//nothing was ever connected, so no edges in the graph
+		//doing a combination of numNodes choose 2 will give not connected for this case
+		//uses factorial method
+		if (numSingleComp == peopleCount){
+			numNot = (factorial(peopleCount)) / (factorial(peopleCount - 2) * 2);
+		}else if (numSingleComp != 0){
+			for(int i = 0; i < numSingleComp; i++){
+				numNot += peopleCount-1;
+			}
+		}
+		
+		//if only one connected component
+		if (numComp == 1){
+			numNot = 0;
+		}
+		
+		//there are single components so we must add the node count-1 for each single
+		//b/c that is num of not connected pairs
+		
 		System.out.println(numNot);
 	}
 	
+	public static int factorial(int n) {
+        int num = 1;
+        for (int i = 1; i <= n; i++) {
+            num *= i;
+        }
+        return num;
+    }
+	
 	public static void popular() {
-		for (HashMap.Entry<String, Person> entry : total.entrySet()) {
-			Person p = entry.getValue();
+		for (int i = 0; i < peopleCount; i++) {
+			Person p = allPeople.get(i);
 			String friendsandnum = bfs(p);
 			double numFriends = Double.parseDouble(friendsandnum.split("-")[1]);
 			if (numFriends == 0.0){
@@ -220,15 +265,15 @@ public class SocialNetwork {
 		
 		///now get max and print out the ones that have this max
 		double maxPop = 0;
-		for (HashMap.Entry<String, Person> entry : total.entrySet()) {
-			Double p = entry.getValue().getPop();
+		for (int i = 0; i < peopleCount; i++){
+			Double p = allPeople.get(i).getPop();
 			if (p > maxPop) {
 				maxPop = p;
 			}
 		}
 		//print the names with max pop
-		for (HashMap.Entry<String, Person> entry : total.entrySet()) {
-			Person p = entry.getValue();
+		for (int i = 0; i < peopleCount; i++){
+			Person p = allPeople.get(i);
 			if (p.getPop() == maxPop){
 				System.out.println(p.getName());
 			}
@@ -236,11 +281,9 @@ public class SocialNetwork {
 	}
 	
 	public static String bfs(Person pe){
-//		for (int i = 0; i < peopleCount; i++){
-//			allPeople.get(i).setVisited(false);
-//		}
-		for (HashMap.Entry<String, Person> entry : total.entrySet()){
-			entry.getValue().setVisited(false);
+		//set all to not visited before doing bfs
+		for (int i = 0; i < peopleCount; i++){
+			allPeople.get(i).setVisited(false);
 		}
 		String friends = "";
 		int num = 0;
