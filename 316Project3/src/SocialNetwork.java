@@ -6,7 +6,7 @@ public class SocialNetwork {
 	
 	public static LinkedList<Person> allPeople = new LinkedList<Person>();
 	public static HashMap<String, Person> total = new HashMap<String,Person>();
-	public static int peopleCount = 0;
+	//public static int peopleCount = 0;
 	
 	public static void main(String args[]){
 		try {
@@ -45,7 +45,7 @@ public class SocialNetwork {
 				case "relation":
 					n1 = scan.next();
 					n2 = scan.next();
-					relation(n1, n2);
+					System.out.println(relation(n1, n2));
 					System.out.println("$");
 					break;
 				case "notconnected":
@@ -74,7 +74,7 @@ public class SocialNetwork {
 					Person p = new Person(name);
 					total.put(name, p);
 					allPeople.add(p);
-					peopleCount++;
+					//peopleCount++;
 				}
 			} else {
 				String n1 = scan.next();
@@ -123,16 +123,11 @@ public class SocialNetwork {
 		
 		LinkedList<Person> tovisit = new LinkedList<Person>();
 		LinkedList<Person> alreadyvisit = new LinkedList<Person>();
-		HashMap<String, Person> path = new HashMap<String, Person>();
 		String thepath = "";
 		
 		tovisit.add(start);
 		alreadyvisit.add(start);
-		path.put(start.getName(), null);
 		start.setPred(null);
-		//thepath += start.getName() + "\n";
-		
-		//p1.setVisited();
 		boolean t = true;
 		while(!tovisit.isEmpty() && t){
 			Person p = tovisit.removeHead();
@@ -144,7 +139,6 @@ public class SocialNetwork {
 					thepath = name.getName() + "\n" + thepath;
 					name = name.getPred();
 				}
-				System.out.print(thepath);
 				t = false;
 			} else if(p == null) {
 				t = false;
@@ -155,7 +149,6 @@ public class SocialNetwork {
 					Person a = pList.get(i);
 					if (!alreadyvisit.contains(a)) {
 						a.setPred(p);
-						//path.put(a.getName(), p);
 						alreadyvisit.add(a);
 						tovisit.add(a);
 					}
@@ -210,21 +203,25 @@ public class SocialNetwork {
 	public static void popular() {
 		for (int i = 0; i < allPeople.size(); i++) {
 			Person p = allPeople.get(i);
-			LinkedList<Person> adj = p.getAdj();
+			//LinkedList<Person> adj = p.getAdj();
 			String friendsandnum = bfs(p);
+			//System.out.println("NAME- " + p.getName());
+			//System.out.println(friendsandnum);
 			double numFriends = Double.parseDouble(friendsandnum.split("-")[1]);
 			if (numFriends == 0.0){
 				p.setPop(0.0);
 			} else {
 				String friends = friendsandnum.split("-")[0];
 				double sumlength = 0.0;
-				String[] allofem = friends.split("\n");
-				for(int k = 0; k < allofem.length - 1; k++) {
-					String per = allofem[i];
+				for(int k = 0; k < friends.split("\n").length; k++) {
+					String per = friends.split("\n")[k];
 					String path = relation(p.getName(), per);
 					//check this and watch for newline
-					sumlength += path.split("\n").length - 2;
+					sumlength += path.split("\n").length - 1;
 				}
+				//System.out.println(p.getName());
+				//System.out.println(numFriends);
+				//System.out.println(sumlength);
 				p.setPop(numFriends/sumlength);
 			}
 		}
@@ -233,6 +230,8 @@ public class SocialNetwork {
 		double maxPop = 0;
 		for (int i = 0; i < allPeople.size(); i++) {
 			Double p = allPeople.get(i).getPop();
+			//String name = allPeople.get(i).getName();
+			//System.out.println(name + ": " + p);
 			if (p > maxPop) {
 				maxPop = p;
 			}
@@ -247,6 +246,9 @@ public class SocialNetwork {
 	}
 	
 	public static String bfs(Person pe){
+		for (int i = 0; i < allPeople.size(); i++){
+			allPeople.get(i).setVisited(false);
+		}
 		String friends = "";
 		int num = 0;
 		while(!pe.isVisit()){
