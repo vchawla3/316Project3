@@ -1,12 +1,65 @@
 /**
- * 
- */
-
-/**
  * @author Vaibhav Chawla (vchawla3), Kirtan Patel, Aaron Chan, Morgan Arrington
  * the list we implement for this project
  */
 public class LinkedList<T> {
+	/**
+	 * inner class Node for linked list
+	 */
+	public class Node {
+
+		/**
+		 * next node in the list
+		 */
+		public Node next;
+		/**
+		 * value inside the node
+		 */
+		public T val;
+		
+		/**
+		 * Node constructor
+		 * @param valData value to put into new Node being constructed
+		 */
+		public Node(T valData) {
+			this.next = null;
+			this.val = valData;
+		}
+		/**
+		 * Node constructor
+		 * @param valData value to put into new Node
+		 * @param nextVal Node value to put as reference to next Node
+		 */
+		public Node(T valData, Node nextVal) {
+			this.next = nextVal;
+			this.val = valData;
+		}
+		
+		/**
+		 * gets the val of current Node
+		 * @return val inside Node
+		 */
+		public T getVal() {
+			return this.val;
+		}
+		
+		/**
+		 * gets ref to Next Node
+		 * @return the Node next to this current one
+		 */
+		public Node getNext(){
+			return this.next;
+		}
+		
+		/**
+		 * sets the ref to the Next Node
+		 * @param nextData the Node that will be set to this.next
+		 */
+		public void setNext(Node nextData){
+			this.next = nextData;
+		}
+	}
+	
 	/**
 	 * private top Node that corresponds to the very first node in the list
 	 */
@@ -15,7 +68,7 @@ public class LinkedList<T> {
 	 * private int to keep track of the size of the total list
 	 */
 	private int size;
-
+	
 	/**
 	 * the constructor for a linked list
 	 */
@@ -98,8 +151,6 @@ public class LinkedList<T> {
 			//error out of bounds
 			return false;
 		}
-		
-		
 		
 		//first node to replace
 		if (idx == 0) {
@@ -234,61 +285,4 @@ public class LinkedList<T> {
 		thelist+= "]";
 		return thelist;
     }
-	
-	/**
-	 * inner class Node for linked list
-	 */
-	public class Node {
-
-		/**
-		 * next node in the list
-		 */
-		public Node next;
-		/**
-		 * value inside the node
-		 */
-		public T val;
-		
-		/**
-		 * Node constructor
-		 * @param valData value to put into new Node being constructed
-		 */
-		public Node(T valData) {
-			this.next = null;
-			this.val = valData;
-		}
-		/**
-		 * Node constructor
-		 * @param valData value to put into new Node
-		 * @param nextVal Node value to put as reference to next Node
-		 */
-		public Node(T valData, Node nextVal) {
-			this.next = nextVal;
-			this.val = valData;
-		}
-		
-		/**
-		 * gets the val of current Node
-		 * @return val inside Node
-		 */
-		public T getVal() {
-			return this.val;
-		}
-		
-		/**
-		 * gets ref to Next Node
-		 * @return the Node next to this current one
-		 */
-		public Node getNext(){
-			return this.next;
-		}
-		
-		/**
-		 * sets the ref to the Next Node
-		 * @param nextData the Node that will be set to this.next
-		 */
-		public void setNext(Node nextData){
-			this.next = nextData;
-		}
-	}
 }

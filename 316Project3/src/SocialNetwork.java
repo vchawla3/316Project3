@@ -2,12 +2,30 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.io.*;
 
+/**
+ * Main class where graph is created and algorithms are run
+ * @author Vaibhav Chawla (vchawla3), Kirtan Patel, Aaron Chan, Morgan Arrington
+ *
+ */
 public class SocialNetwork {
 	
+	/**
+	 * adjacency list holding all Person objects in the order they were inputed
+	 */
 	public static LinkedList<Person> allPeople = new LinkedList<Person>();
+	/**
+	 * map holding string name of Person object, only used to get Person objects
+	 */
 	public static HashMap<String, Person> total = new HashMap<String,Person>();
+	/**
+	 * count of number of people in network
+	 */
 	public static int peopleCount = 0;
 	
+	/**
+	 * main method for SocialNetwork program
+	 * @param args
+	 */
 	public static void main(String args[]){
 		try {
 			File input = new File(args[0]);
@@ -22,6 +40,9 @@ public class SocialNetwork {
 		}
 	}
 	
+	/**
+	 * parses commands from the user input and runs corresponding algorithms
+	 */
 	public static void parseCommands(){
 		System.out.println("$");
 		Scanner scan = new Scanner(System.in);
@@ -63,6 +84,11 @@ public class SocialNetwork {
 		}
 	}
 	
+	/**
+	 * parses the input file using the initialized scanner and creates the 
+	 * graph/adjacency list
+	 * @param scan Scanner holding input file
+	 */
 	public static void createGraph(Scanner scan){
 		boolean t = true;
 		while(scan.hasNext()){
@@ -87,6 +113,12 @@ public class SocialNetwork {
 		}
 	}
 	
+	/**
+	 * checks and prints yes if the two people passed in
+	 * are friends, else print no.
+	 * @param n1 name of first person
+	 * @param n2 name of second person
+	 */
 	public static void isFriend(String n1, String n2) {
 		//get Person objects - only place to use map
 		Person p1 = total.get(n1);
@@ -100,6 +132,11 @@ public class SocialNetwork {
 		}
 	}
 	
+	/**
+	 * checks and prints the mutual friends of the two people passed in
+	 * @param n1 name of first person
+	 * @param n2 name of second person
+	 */
 	public static void mutual(String n1, String n2) {
 		//get Person objects - only place to use map
 		Person p1 = total.get(n1);
@@ -163,6 +200,7 @@ public class SocialNetwork {
 		}
 		return thepath;
 	}
+	
 	/**
 	 * prints number of pairs of people are not connected in the social network
 	 */
@@ -177,7 +215,7 @@ public class SocialNetwork {
 		for (int i = 0; i < peopleCount; i++) {
 			Person pe = allPeople.get(i);
 			if (pe.getAdj().size() == peopleCount - 1) {
-				numNot = 0;
+				//do nothing
 			} else {
 				while(!pe.isVisit()){
 					pe.setVisited(true);
@@ -197,7 +235,7 @@ public class SocialNetwork {
 							LinkedList<Person> pList = p.getAdj();
 							for (int k = 0; k < pList.size(); k++) {
 								Person a = pList.get(k);
-								if (!alreadyvisit.contains(a)) {
+								if (!a.visited) {
 									alreadyvisit.add(a);
 									tovisit.add(a);
 									a.setVisited(true);
@@ -216,25 +254,24 @@ public class SocialNetwork {
 		//nothing was ever connected, so no edges in the graph
 		//doing a combination of numNodes choose 2 will give not connected for this case
 		//uses factorial method
-		if (numSingleComp == peopleCount){
+		if (numComp == 1){
+			//only 1 connected comp so 
+			numNot = 0;
+		} else if (numSingleComp == peopleCount){
 			numNot = (factorial(peopleCount)) / (factorial(peopleCount - 2) * 2);
 		}else if (numSingleComp != 0){
-			for(int i = 0; i < numSingleComp; i++){
+			for(int i = 0; i < numSingleComp-1; i++){
 				numNot += peopleCount-1;
 			}
 		}
-		
-		//if only one connected component
-		if (numComp == 1){
-			numNot = 0;
-		}
-		
-		//there are single components so we must add the node count-1 for each single
-		//b/c that is num of not connected pairs
-		
 		System.out.println(numNot);
 	}
 	
+	/**
+	 * simple method to compute factorial
+	 * @param n number to get factorial of
+	 * @return factorial of input num
+	 */
 	public static int factorial(int n) {
         int num = 1;
         for (int i = 1; i <= n; i++) {
@@ -243,6 +280,9 @@ public class SocialNetwork {
         return num;
     }
 	
+	/**
+	 * Finds and outputs the most popular people in the graph
+	 */
 	public static void popular() {
 		for (int i = 0; i < peopleCount; i++) {
 			Person p = allPeople.get(i);
@@ -280,6 +320,11 @@ public class SocialNetwork {
 		}
 	}
 	
+	/**
+	 * method to run a full bfs and return all people hit plus the num people hit
+	 * @param pe person to start bfs from
+	 * @return string holding people in traversed order plus total num ppl hit
+	 */
 	public static String bfs(Person pe){
 		//set all to not visited before doing bfs
 		for (int i = 0; i < peopleCount; i++){
@@ -290,10 +335,8 @@ public class SocialNetwork {
 		while(!pe.isVisit()){
 			pe.setVisited(true);
 			LinkedList<Person> tovisit = new LinkedList<Person>();
-			LinkedList<Person> alreadyvisit = new LinkedList<Person>();
 			
 			tovisit.add(pe);
-			alreadyvisit.add(pe);
 			boolean t = true;
 			while(!tovisit.isEmpty() && t){
 				Person p = tovisit.removeHead();
@@ -305,8 +348,8 @@ public class SocialNetwork {
 					LinkedList<Person> pList = p.getAdj();
 					for (int k = 0; k < pList.size(); k++) {
 						Person a = pList.get(k);
-						if (!alreadyvisit.contains(a)) {
-							alreadyvisit.add(a);
+						if (!a.visited) {
+							//alreadyvisit.add(a);
 							tovisit.add(a);
 							a.setVisited(true);
 							friends += a.getName() + "\n";
