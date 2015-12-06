@@ -5,10 +5,12 @@ public class Person {
 	public LinkedList<Person> adjList = new LinkedList<Person>();
 	public boolean visited;
 	public Person pred;
+	public double popularity;
 	
 	public Person(String name) {
 		this.name = name;
 		this.visited = false;
+		this.popularity = 0;
 	}
 	
 	public void addAdj(Person p) {
@@ -41,5 +43,13 @@ public class Person {
 	
 	public Person getPred(){
 		return this.pred;
+	}
+	
+	public void setPop(double p){
+		this.popularity = p;
+	}
+	
+	public double getPop(){
+		return this.popularity;
 	}
 }

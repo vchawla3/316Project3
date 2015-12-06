@@ -208,6 +208,78 @@ public class SocialNetwork {
 	}
 	
 	public static void popular() {
+		for (int i = 0; i < allPeople.size(); i++) {
+			Person p = allPeople.get(i);
+			LinkedList<Person> adj = p.getAdj();
+			String friendsandnum = bfs(p);
+			double numFriends = Double.parseDouble(friendsandnum.split("-")[1]);
+			if (numFriends == 0.0){
+				p.setPop(0.0);
+			} else {
+				String friends = friendsandnum.split("-")[0];
+				double sumlength = 0.0;
+				String[] allofem = friends.split("\n");
+				for(int k = 0; k < allofem.length - 1; k++) {
+					String per = allofem[i];
+					String path = relation(p.getName(), per);
+					//check this and watch for newline
+					sumlength += path.split("\n").length - 2;
+				}
+				p.setPop(numFriends/sumlength);
+			}
+		}
 		
+		///now get max and print out the ones that have this max
+		double maxPop = 0;
+		for (int i = 0; i < allPeople.size(); i++) {
+			Double p = allPeople.get(i).getPop();
+			if (p > maxPop) {
+				maxPop = p;
+			}
+		}
+		
+		for (int i = 0; i < allPeople.size(); i++) {
+			Person p = allPeople.get(i);
+			if (p.getPop() == maxPop){
+				System.out.println(p.getName());
+			}
+		}
 	}
+	
+	public static String bfs(Person pe){
+		String friends = "";
+		int num = 0;
+		while(!pe.isVisit()){
+			pe.setVisited(true);
+			LinkedList<Person> tovisit = new LinkedList<Person>();
+			LinkedList<Person> alreadyvisit = new LinkedList<Person>();
+			
+			tovisit.add(pe);
+			alreadyvisit.add(pe);
+			boolean t = true;
+			while(!tovisit.isEmpty() && t){
+				Person p = tovisit.removeHead();
+				if (p == null){
+					//no more to search
+					t = false;
+				} else {
+					//keep searching
+					LinkedList<Person> pList = p.getAdj();
+					for (int k = 0; k < pList.size(); k++) {
+						Person a = pList.get(k);
+						if (!alreadyvisit.contains(a)) {
+							alreadyvisit.add(a);
+							tovisit.add(a);
+							a.setVisited(true);
+							friends += a.getName() + "\n";
+							num++;
+						}
+					}
+				}	
+			}
+		}
+		friends = friends + "-" + num;
+		return friends;
+	}
+	
 }
