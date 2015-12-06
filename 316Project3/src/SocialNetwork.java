@@ -4,9 +4,9 @@ import java.io.*;
 
 public class SocialNetwork {
 	
-	public static LinkedList<Person> allPeople = new LinkedList<Person>();
+	//public static LinkedList<Person> allPeople = new LinkedList<Person>();
 	public static HashMap<String, Person> total = new HashMap<String,Person>();
-	//public static int peopleCount = 0;
+	public static int peopleCount = 0;
 	
 	public static void main(String args[]){
 		try {
@@ -73,8 +73,8 @@ public class SocialNetwork {
 				} else {
 					Person p = new Person(name);
 					total.put(name, p);
-					allPeople.add(p);
-					//peopleCount++;
+					//allPeople.add(p);
+					peopleCount++;
 				}
 			} else {
 				String n1 = scan.next();
@@ -120,11 +120,9 @@ public class SocialNetwork {
 	public static String relation(String n1, String n2) {
 		Person start = total.get(n1);
 		Person end = total.get(n2);
-		
 		LinkedList<Person> tovisit = new LinkedList<Person>();
 		LinkedList<Person> alreadyvisit = new LinkedList<Person>();
 		String thepath = "";
-		
 		tovisit.add(start);
 		alreadyvisit.add(start);
 		start.setPred(null);
@@ -162,12 +160,12 @@ public class SocialNetwork {
 	 */
 	public static void notconnected() {
 		//set all to not visited
-		for (int i = 0; i < allPeople.size(); i++){
-			allPeople.get(i).setVisited(false);
+		for (HashMap.Entry<String, Person> entry : total.entrySet()){
+			entry.getValue().setVisited(false);
 		}
 		int numNot = 1;
-		for (int i = 0; i < allPeople.size(); i++){
-			Person pe = allPeople.get(i);
+		for (HashMap.Entry<String, Person> entry : total.entrySet()){
+			Person pe = entry.getValue();
 			while(!pe.isVisit()){
 				pe.setVisited(true);
 				LinkedList<Person> tovisit = new LinkedList<Person>();
@@ -201,12 +199,9 @@ public class SocialNetwork {
 	}
 	
 	public static void popular() {
-		for (int i = 0; i < allPeople.size(); i++) {
-			Person p = allPeople.get(i);
-			//LinkedList<Person> adj = p.getAdj();
+		for (HashMap.Entry<String, Person> entry : total.entrySet()) {
+			Person p = entry.getValue();
 			String friendsandnum = bfs(p);
-			//System.out.println("NAME- " + p.getName());
-			//System.out.println(friendsandnum);
 			double numFriends = Double.parseDouble(friendsandnum.split("-")[1]);
 			if (numFriends == 0.0){
 				p.setPop(0.0);
@@ -216,29 +211,24 @@ public class SocialNetwork {
 				for(int k = 0; k < friends.split("\n").length; k++) {
 					String per = friends.split("\n")[k];
 					String path = relation(p.getName(), per);
-					//check this and watch for newline
+					//subtract one because string also has starting person who don't want to count
 					sumlength += path.split("\n").length - 1;
 				}
-				//System.out.println(p.getName());
-				//System.out.println(numFriends);
-				//System.out.println(sumlength);
 				p.setPop(numFriends/sumlength);
 			}
 		}
 		
 		///now get max and print out the ones that have this max
 		double maxPop = 0;
-		for (int i = 0; i < allPeople.size(); i++) {
-			Double p = allPeople.get(i).getPop();
-			//String name = allPeople.get(i).getName();
-			//System.out.println(name + ": " + p);
+		for (HashMap.Entry<String, Person> entry : total.entrySet()) {
+			Double p = entry.getValue().getPop();
 			if (p > maxPop) {
 				maxPop = p;
 			}
 		}
-		
-		for (int i = 0; i < allPeople.size(); i++) {
-			Person p = allPeople.get(i);
+		//print the names with max pop
+		for (HashMap.Entry<String, Person> entry : total.entrySet()) {
+			Person p = entry.getValue();
 			if (p.getPop() == maxPop){
 				System.out.println(p.getName());
 			}
@@ -246,8 +236,11 @@ public class SocialNetwork {
 	}
 	
 	public static String bfs(Person pe){
-		for (int i = 0; i < allPeople.size(); i++){
-			allPeople.get(i).setVisited(false);
+//		for (int i = 0; i < peopleCount; i++){
+//			allPeople.get(i).setVisited(false);
+//		}
+		for (HashMap.Entry<String, Person> entry : total.entrySet()){
+			entry.getValue().setVisited(false);
 		}
 		String friends = "";
 		int num = 0;
