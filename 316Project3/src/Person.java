@@ -4,6 +4,7 @@ public class Person {
 	public String name;
 	public LinkedList<Person> adjList = new LinkedList<Person>();
 	public boolean visited;
+	public Person pred;
 	
 	public Person(String name) {
 		this.name = name;
@@ -32,5 +33,13 @@ public class Person {
 	
 	public boolean isVisit(){
 		return this.visited;
+	}
+	
+	public void setPred(Person p){
+		this.pred = p;
+	}
+	
+	public Person getPred(){
+		return this.pred;
 	}
 }

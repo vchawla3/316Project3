@@ -129,22 +129,20 @@ public class SocialNetwork {
 		tovisit.add(start);
 		alreadyvisit.add(start);
 		path.put(start.getName(), null);
-
+		start.setPred(null);
+		//thepath += start.getName() + "\n";
+		
 		//p1.setVisited();
 		boolean t = true;
 		while(!tovisit.isEmpty() && t){
 			Person p = tovisit.removeHead();
 			if (p == end){
 				//found it
-				String name = p.getName();
+				thepath = p.getName() + "\n" + thepath;
+				Person name = p.getPred();
 				while(name != null){
-					thepath = name + "\n" + thepath;
-					Person tmp = path.get(name);
-					if (tmp == null){
-						name = null;
-					} else {
-						name = path.get(name).getName();
-					}
+					thepath = name.getName() + "\n" + thepath;
+					name = name.getPred();
 				}
 				System.out.print(thepath);
 				t = false;
@@ -156,7 +154,8 @@ public class SocialNetwork {
 				for (int i = 0; i < pList.size(); i++) {
 					Person a = pList.get(i);
 					if (!alreadyvisit.contains(a)) {
-						path.put(a.getName(), p);
+						a.setPred(p);
+						//path.put(a.getName(), p);
 						alreadyvisit.add(a);
 						tovisit.add(a);
 					}
@@ -183,20 +182,17 @@ public class SocialNetwork {
 				
 				tovisit.add(pe);
 				alreadyvisit.add(pe);
-				//path.put(start.getName(), null);
-
-				//p1.setVisited();
 				boolean t = true;
 				while(!tovisit.isEmpty() && t){
 					Person p = tovisit.removeHead();
 					if (p == null){
+						//no more to search
 						t = false;
 					} else {
 						//keep searching
 						LinkedList<Person> pList = p.getAdj();
 						for (int k = 0; k < pList.size(); k++) {
 							Person a = pList.get(k);
-							
 							if (!alreadyvisit.contains(a)) {
 								alreadyvisit.add(a);
 								tovisit.add(a);
