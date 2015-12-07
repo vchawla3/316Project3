@@ -205,63 +205,66 @@ public class SocialNetwork {
 	 * prints number of pairs of people are not connected in the social network
 	 */
 	public static void notconnected() {
-		//set all to not visited before doing bfs
 		for (int i = 0; i < peopleCount; i++){
 			allPeople.get(i).setVisited(false);
 		}
-		int numComp = 0;
-		int numSingleComp = 0;
-		int numNot = 1;
+		
+		int compSizes[] = new int[peopleCount];
+		int x = 0;
+		
+		int compCount = 0;
 		for (int i = 0; i < peopleCount; i++) {
 			Person pe = allPeople.get(i);
-			if (pe.getAdj().size() == peopleCount - 1) {
-				//do nothing
-			} else {
-				while(!pe.isVisit()){
-					pe.setVisited(true);
-					LinkedList<Person> tovisit = new LinkedList<Person>();
-					LinkedList<Person> alreadyvisit = new LinkedList<Person>();
-					
-					tovisit.add(pe);
-					alreadyvisit.add(pe);
-					boolean t = true;
-					while(!tovisit.isEmpty() && t){
-						Person p = tovisit.removeHead();
-						if (p == null){
-							//no more to search
-							t = false;
+			while(!pe.isVisit()){
+				pe.setVisited(true);
+				LinkedList<Person> tovisit = new LinkedList<Person>();
+				
+				int sizeOfComp = 0;
+				tovisit.add(pe);
+				sizeOfComp++;
+				
+				boolean t = true;
+				while(!tovisit.isEmpty() && t){
+					Person p = tovisit.removeHead();
+					if (p == null){
+						//no more to search
+						t = false;
+					} else {
+						//keep searching
+						LinkedList<Person> pList = p.getAdj();
+						if (pList.size() == 0) {
+							//do nothing
 						} else {
-							//keep searching
-							LinkedList<Person> pList = p.getAdj();
 							for (int k = 0; k < pList.size(); k++) {
 								Person a = pList.get(k);
 								if (!a.visited) {
-									alreadyvisit.add(a);
 									tovisit.add(a);
 									a.setVisited(true);
+									sizeOfComp++;
 								}
 							}
-						}	
+						}
 					}
-					if (alreadyvisit.size() == 1){
-						numSingleComp++;
-					}
-					numNot *= alreadyvisit.size();
-					numComp++;
 				}
+				//increment num of Comps
+				compCount++;
+				//add size of comp to the array
+				compSizes[x] = sizeOfComp;
+				//increment indexer for array
+				x++;
 			}
 		}
-		//nothing was ever connected, so no edges in the graph
-		//doing a combination of numNodes choose 2 will give not connected for this case
-		//uses factorial method
-		if (numComp == 1){
-			//only 1 connected comp so 
-			numNot = 0;
-		} else if (numSingleComp == peopleCount){
+		
+		int numNot = 0;
+		if (compCount == 1){
 			numNot = (factorial(peopleCount)) / (factorial(peopleCount - 2) * 2);
-		}else if (numSingleComp != 0){
-			for(int i = 0; i < numSingleComp-1; i++){
-				numNot += peopleCount-1;
+		} else {
+			for(int i = 0; i < compCount; i++) {
+				int n = 0;
+				for (int j = i + 1; j < compCount;j++){
+					n += compSizes[i]*compSizes[j];
+				}
+				numNot +=n;
 			}
 		}
 		System.out.println(numNot);
@@ -335,7 +338,6 @@ public class SocialNetwork {
 		while(!pe.isVisit()){
 			pe.setVisited(true);
 			LinkedList<Person> tovisit = new LinkedList<Person>();
-			
 			tovisit.add(pe);
 			boolean t = true;
 			while(!tovisit.isEmpty() && t){
