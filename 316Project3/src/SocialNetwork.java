@@ -160,17 +160,20 @@ public class SocialNetwork {
 	 * @return string containing the path, empty string ("") if no path
 	 */
 	public static String relation(String n1, String n2) {
+		for (int i = 0; i < peopleCount; i++){
+			allPeople.get(i).setVisited(false);
+		}
+		
 		//get Person objects - only place to use map
 		Person start = total.get(n1);
 		Person end = total.get(n2);
 		
 		//compute relation
 		LinkedList<Person> tovisit = new LinkedList<Person>();
-		LinkedList<Person> alreadyvisit = new LinkedList<Person>();
 		String thepath = "";
 		tovisit.add(start);
-		alreadyvisit.add(start);
 		start.setPred(null);
+		start.setVisited(true);
 		boolean t = true;
 		while(!tovisit.isEmpty() && t){
 			Person p = tovisit.removeHead();
@@ -190,10 +193,10 @@ public class SocialNetwork {
 				LinkedList<Person> pList = p.getAdj();
 				for (int i = 0; i < pList.size(); i++) {
 					Person a = pList.get(i);
-					if (!alreadyvisit.contains(a)) {
+					if (!a.visited) {
 						a.setPred(p);
-						alreadyvisit.add(a);
 						tovisit.add(a);
+						a.setVisited(true);
 					}
 				}	
 			}
@@ -256,37 +259,22 @@ public class SocialNetwork {
 		}
 		
 		int numNot = 0;
-		if (compCount == 1){
-			numNot = (factorial(peopleCount)) / (factorial(peopleCount - 2) * 2);
-		} else {
-			for(int i = 0; i < compCount; i++) {
-				int n = 0;
-				for (int j = i + 1; j < compCount;j++){
-					n += compSizes[i]*compSizes[j];
-				}
-				numNot +=n;
+		for(int i = 0; i < compCount; i++) {
+			int n = 0;
+			for (int j = i + 1; j < compCount;j++){
+				n += compSizes[i]*compSizes[j];
 			}
+			numNot +=n;
 		}
 		System.out.println(numNot);
 	}
 	
 	/**
-	 * simple method to compute factorial
-	 * @param n number to get factorial of
-	 * @return factorial of input num
-	 */
-	public static int factorial(int n) {
-        int num = 1;
-        for (int i = 1; i <= n; i++) {
-            num *= i;
-        }
-        return num;
-    }
-	
-	/**
 	 * Finds and outputs the most popular people in the graph
 	 */
 	public static void popular() {
+
+		
 		for (int i = 0; i < peopleCount; i++) {
 			Person p = allPeople.get(i);
 			String friendsandnum = bfs(p);
@@ -296,7 +284,8 @@ public class SocialNetwork {
 			} else {
 				String friends = friendsandnum.split("-")[0];
 				double sumlength = 0.0;
-				for(int k = 0; k < friends.split("\n").length; k++) {
+				int size = friends.split("\n").length;
+				for(int k = 0; k < size; k++) {
 					String per = friends.split("\n")[k];
 					String path = relation(p.getName(), per);
 					//subtract one because string also has starting person who don't want to count
@@ -334,6 +323,8 @@ public class SocialNetwork {
 			allPeople.get(i).setVisited(false);
 		}
 		String friends = "";
+		//LinkedList<Person> component = new LinkedList<Person>();
+		
 		int num = 0;
 		while(!pe.isVisit()){
 			pe.setVisited(true);
@@ -351,9 +342,9 @@ public class SocialNetwork {
 					for (int k = 0; k < pList.size(); k++) {
 						Person a = pList.get(k);
 						if (!a.visited) {
-							//alreadyvisit.add(a);
 							tovisit.add(a);
 							a.setVisited(true);
+							//component.add(a);
 							friends += a.getName() + "\n";
 							num++;
 						}
