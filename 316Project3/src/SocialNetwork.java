@@ -23,8 +23,13 @@ public class SocialNetwork {
 	public static int peopleCount = 0;
 	
 	/**
+	 * most popular Person in graph
+	 */
+	public static String mostPop = null;
+	
+	/**
 	 * main method for SocialNetwork program
-	 * @param args
+	 * @param args command line argument string array
 	 */
 	public static void main(String args[]){
 		try {
@@ -273,25 +278,47 @@ public class SocialNetwork {
 	 * Finds and outputs the most popular people in the graph
 	 */
 	public static void popular() {
-
-		
+		if (mostPop != null){
+			System.out.print(mostPop);
+			return;
+		}
+		LinkedList<Person> tmp = new LinkedList<Person>();
 		for (int i = 0; i < peopleCount; i++) {
-			Person p = allPeople.get(i);
-			String friendsandnum = bfs(p);
-			double numFriends = Double.parseDouble(friendsandnum.split("-")[1]);
+			tmp.add(allPeople.get(i));
+		}
+		
+		while (tmp.size() != 0) {
+			Person p = tmp.get(0);
+			LinkedList<Person> component = bfs(p);
+			//this is the numFriends for every person in the comp
+			double numFriends = (double) component.size();
+			//add back OG person
+			component.add(p);
+			//remove all nodes in component from tmp
+			for (int i = 0; i < tmp.size(); i++) {
+				if (component.contains(tmp.get(i))) {
+					tmp.remove(i);
+					i--;
+				}
+			}
 			if (numFriends == 0.0){
 				p.setPop(0.0);
-			} else {
-				String friends = friendsandnum.split("-")[0];
-				double sumlength = 0.0;
-				int size = friends.split("\n").length;
+			} else {	
+				int size = component.size();
 				for(int k = 0; k < size; k++) {
-					String per = friends.split("\n")[k];
-					String path = relation(p.getName(), per);
-					//subtract one because string also has starting person who don't want to count
-					sumlength += path.split("\n").length - 1;
+					double sumlength = 0.0;
+					Person p1 = component.get(k);
+					for(int j = 0; j < size; j++) {
+						if (k == j){
+							//do nothing
+						} else {
+							String path = relation(p1.getName(), component.get(j).getName());
+							//subtract one because string also has starting person who don't want to count
+							sumlength += path.split("\n").length - 1;
+						}
+					}
+					p1.setPop(numFriends/sumlength);
 				}
-				p.setPop(numFriends/sumlength);
 			}
 		}
 		
@@ -304,9 +331,11 @@ public class SocialNetwork {
 			}
 		}
 		//print the names with max pop
+		mostPop = "";
 		for (int i = 0; i < peopleCount; i++){
 			Person p = allPeople.get(i);
 			if (p.getPop() == maxPop){
+				mostPop += p.getName() + "\n";
 				System.out.println(p.getName());
 			}
 		}
@@ -317,15 +346,15 @@ public class SocialNetwork {
 	 * @param pe person to start bfs from
 	 * @return string holding people in traversed order plus total num ppl hit
 	 */
-	public static String bfs(Person pe){
+	public static LinkedList<Person> bfs(Person pe){
 		//set all to not visited before doing bfs
 		for (int i = 0; i < peopleCount; i++){
 			allPeople.get(i).setVisited(false);
 		}
-		String friends = "";
-		//LinkedList<Person> component = new LinkedList<Person>();
+		//String friends = "";
+		LinkedList<Person> component = new LinkedList<Person>();
 		
-		int num = 0;
+		//int num = 0;
 		while(!pe.isVisit()){
 			pe.setVisited(true);
 			LinkedList<Person> tovisit = new LinkedList<Person>();
@@ -344,16 +373,14 @@ public class SocialNetwork {
 						if (!a.visited) {
 							tovisit.add(a);
 							a.setVisited(true);
-							//component.add(a);
-							friends += a.getName() + "\n";
-							num++;
+							component.add(a);
+							//friends += a.getName() + "\n";
+							//num++;
 						}
 					}
 				}	
 			}
 		}
-		friends = friends + "-" + num;
-		return friends;
+		return component;
 	}
-	
 }

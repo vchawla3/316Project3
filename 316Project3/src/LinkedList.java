@@ -177,7 +177,7 @@ public class LinkedList<T> {
 	/**
 	 * gets the value at the specified index
 	 * @param idx to get value from
-	 * @return value of datatype T from index
+	 * @return value of data type T from index
 	 */
 	public T get(int idx){
 		if (idx < 0) {
@@ -228,6 +228,7 @@ public class LinkedList<T> {
 		}
 		Node cur = top;
 		top = top.next;
+		size--;
 		return cur.getVal();
 	}
 	
@@ -243,6 +244,7 @@ public class LinkedList<T> {
 		Node current = top;
 		if ( idx == 0 ){
 			top = top.getNext();
+			size--;
 			return true;
 		} else if ( idx == (size() - 1) ) {
 			for(int i = 0; i < idx - 1; i++) {
